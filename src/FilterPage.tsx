@@ -5,6 +5,8 @@ import regencyIcon from "../public/regency.svg";
 import districtIcon from "../public/district.svg";
 import dropdownIcon from "../public/dropdown.svg";
 import resetIcon from "../public/reset.svg";
+import breadcrumbsIcon from "../public/breadcrumbs.svg";
+import arrowDownIcon from "../public/arrow-down.svg";
 
 // interfaces untuk dummy json
 interface Province {
@@ -94,6 +96,49 @@ function ComboBox({
             <img src={dropdownIcon} alt="dropdown" className="h-5 w-5" />
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+interface BreadcrumbProps {
+  province?: Province;
+  regency?: Regency;
+  district?: District;
+}
+
+function Breadcrumb({ province, regency, district }: BreadcrumbProps) {
+  return (
+    <div className="breadcrumb">
+      <div className="px-8 py-8 flex items-center gap-3 text-sm font-medium text-gray-400 bg-white border-b border-gray-200">
+        <span className={!province ? "text-blue-500 font-bold" : ""}>
+          Indonesia
+        </span>
+
+        {province && (
+          <>
+            <img src={breadcrumbsIcon} alt="breadcrumbs" className="w-3 h-3" />
+            <span className={!regency ? "text-blue-500 font-bold" : ""}>
+              {province.name}
+            </span>
+          </>
+        )}
+
+        {regency && (
+          <>
+            <img src={breadcrumbsIcon} alt="breadcrumbs" className="w-3 h-3" />
+            <span className={!district ? "text-blue-500 font-bold" : ""}>
+              {regency.name}
+            </span>
+          </>
+        )}
+
+        {district && (
+          <>
+            <img src={breadcrumbsIcon} alt="breadcrumbs" className="w-3 h-3" />
+            <span className="text-blue-500 font-bold">{district.name}</span>
+          </>
+        )}
       </div>
     </div>
   );
@@ -202,10 +247,76 @@ function LeftPanel({
 }
 
 // right panel container
-function RightPanel() {
+interface RightPanelProps {
+  province?: Province;
+  regency?: Regency;
+  district?: District;
+}
+
+function RightPanel({ province, regency, district }: RightPanelProps) {
   return (
     <div className="right-panel">
-      <h2>Wilayah</h2>
+      <div className="h-screen flex flex-1 flex-col bg-[#fbfdff]">
+        <Breadcrumb province={province} regency={regency} district={district} />
+        <div className="flex-1 flex flex-col items-center justify-center pb-20 overflow-y-auto">
+          {province ? (
+            <div className="flex flex-col items-center gap-10 w-full max-w-4xl px-4">
+              <div className="text-center w-full">
+                <h3 className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-4">
+                  Provinsi
+                </h3>
+                <h1 className="text-5xl md:text-6xl font-bold text-[#0d1629]">
+                  {province.name}
+                </h1>
+              </div>
+
+              {regency && (
+                <>
+                  <div className="text-gray-200">
+                    <img
+                      src={arrowDownIcon}
+                      alt="arrow down"
+                      className="h-6 w-6"
+                    />
+                  </div>
+
+                  <div className="text-center w-full animate-fade-in-up">
+                    <h3 className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-4">
+                      Kota / Kabupaten
+                    </h3>
+                    <h1 className="text-5xl md:text-6xl font-bold text-[#0d1629]">
+                      {regency.name}
+                    </h1>
+                  </div>
+                </>
+              )}
+
+              {district && (
+                <>
+                  <img
+                    src={arrowDownIcon}
+                    alt="arrow down"
+                    className="h-6 w-6"
+                  />
+
+                  <div className="text-center w-full animate-fade-in-up">
+                    <h3 className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-4">
+                      Kecamatan
+                    </h3>
+                    <h1 className="text-5xl md:text-6xl font-bold text-[#0d1629]">
+                      {district.name}
+                    </h1>
+                  </div>
+                </>
+              )}
+            </div>
+          ) : (
+            <div className="text-center text-gray-300">
+              <p className="text-lg">Silakan pilih wilayah</p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -231,6 +342,17 @@ export default function FilterPage() {
   );
   const filteredDistricts = data.districts.filter(
     (district) => district.regency_id === selectedRegencyId,
+  );
+
+  // Selected Objects
+  const selectedProvince = data.provinces.find(
+    (p) => p.id === selectedProvinceId,
+  );
+  const selectedRegency = data.regencies.find(
+    (r) => r.id === selectedRegencyId,
+  );
+  const selectedDistrict = data.districts.find(
+    (d) => d.id === selectedDistrictId,
   );
 
   // Handlers
@@ -298,7 +420,11 @@ export default function FilterPage() {
           />
         </div>
         <div className="col-span-3">
-          <RightPanel />
+          <RightPanel
+            province={selectedProvince}
+            regency={selectedRegency}
+            district={selectedDistrict}
+          />
         </div>
       </div>
     </main>
