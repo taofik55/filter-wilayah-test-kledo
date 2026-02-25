@@ -66,7 +66,7 @@ function ComboBox({
 }: ComboBoxProps) {
   return (
     <div className="combo-box">
-      <div className="flex flex-col gap-2 w-[320px]">
+      <div className="flex flex-col gap-2 w-full">
         <label className="text-md font-bold text-gray-500 uppercase tracking-wider">
           {label}
         </label>
@@ -101,6 +101,7 @@ function ComboBox({
   );
 }
 
+// Breadcrumb component
 interface BreadcrumbProps {
   province?: Province;
   regency?: Regency;
@@ -265,7 +266,7 @@ function RightPanel({ province, regency, district }: RightPanelProps) {
                 <h3 className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-4">
                   Provinsi
                 </h3>
-                <h1 className="text-5xl md:text-6xl font-bold text-[#0d1629]">
+                <h1 className="text-6xl md:text-7xl font-bold text-[#0d1629]">
                   {province.name}
                 </h1>
               </div>
@@ -303,7 +304,7 @@ function RightPanel({ province, regency, district }: RightPanelProps) {
                     <h3 className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-4">
                       Kecamatan
                     </h3>
-                    <h1 className="text-5xl md:text-6xl font-bold text-[#0d1629]">
+                    <h1 className="text-4xl md:text-5xl font-bold text-[#0d1629]">
                       {district.name}
                     </h1>
                   </div>
@@ -324,6 +325,8 @@ function RightPanel({ province, regency, district }: RightPanelProps) {
 // render UI
 export default function FilterPage() {
   const data = useLoaderData() as RegionData;
+  
+  //penggunaan search param disini untuk prevent kalo misalkan browser di refresh tidak mereset datanya
   const [searchParams, setSearchParams] = useSearchParams();
 
   const selectedProvinceId = searchParams.get("province")
@@ -403,8 +406,8 @@ export default function FilterPage() {
   };
 
   return (
-    <main>
-      <div className="grid grid-cols-4">
+    <main className="w-full min-h-screen">
+      <div className="grid grid-cols-4 w-full h-full">
         <div className="col-span-1">
           <LeftPanel
             provinces={data.provinces}
