@@ -4,6 +4,7 @@ import provinceIcon from "../public/province.svg";
 import regencyIcon from "../public/regency.svg";
 import districtIcon from "../public/district.svg";
 import dropdownIcon from "../public/dropdown.svg";
+import resetIcon from "../public/reset.svg";
 
 // interfaces untuk dummy json
 interface Province {
@@ -38,8 +39,10 @@ interface Option {
   value: string | number;
 }
 
+// component ada di dalam file FiterPage.tsx karena untuk kebutuhan test yang harus menyertakan satu file .tsx dalam soal
+// Combo box component
 interface ComboBoxProps {
-  name: string;
+  name: string; // sesuai soal yang harus ngasih name di combo box
   label: string;
   placeholder?: string;
   value?: string | number;
@@ -50,7 +53,7 @@ interface ComboBoxProps {
 }
 
 function ComboBox({
-  name,
+  name, // sesuai soal yang harus ngasih name di combo box
   label,
   placeholder,
   value,
@@ -60,40 +63,44 @@ function ComboBox({
   icon,
 }: ComboBoxProps) {
   return (
-    <div className="flex flex-col gap-2 w-[300px]">
-      <label className="text-md font-bold text-gray-500 uppercase tracking-wider">
-        {label}
-      </label>
-      <div className="relative">
-        {icon && (
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-            <img src={icon} alt="" className="h-5 w-5 text-gray-400" />
+    <div className="combo-box">
+      <div className="flex flex-col gap-2 w-[320px]">
+        <label className="text-md font-bold text-gray-500 uppercase tracking-wider">
+          {label}
+        </label>
+        <div className="relative">
+          {icon && (
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <img src={icon} alt="" className="h-5 w-5 text-gray-400" />
+            </div>
+          )}
+          <select
+            name={name}
+            className={`w-full appearance-none border border-gray-800 rounded-xl py-3 pr-8 focus:outline-none focus:border-blue-500 bg-transparent font-semibold text-gray-700 disabled:bg-gray-100 disabled:cursor-not-allowed ${
+              icon ? "pl-10" : "px-4"
+            }`}
+            value={value}
+            onChange={onChange}
+            disabled={disabled}
+          >
+            <option value="">{placeholder || "Select..."}</option>
+            {options.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-200">
+            <img src={dropdownIcon} alt="dropdown" className="h-5 w-5" />
           </div>
-        )}
-        <select
-          name={name}
-          className={`w-full appearance-none border border-gray-800 rounded-xl py-3 pr-8 focus:outline-none focus:border-blue-500 bg-white text-gray-700 disabled:bg-gray-100 disabled:cursor-not-allowed ${
-            icon ? "pl-10" : "px-4"
-          }`}
-          value={value}
-          onChange={onChange}
-          disabled={disabled}
-        >
-          <option value="">{placeholder || "Select..."}</option>
-          {options.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-200">
-          <img src={dropdownIcon} alt="dropdown" className="h-5 w-5" />
         </div>
       </div>
     </div>
   );
 }
 
+// container ada di dalam file FiterPage.tsx karena untuk kebutuhan test yang harus menyertakan satu file .tsx dalam soal
+// left panel container
 interface LeftPanelProps {
   provinces: Province[];
   regencies: Regency[];
@@ -107,8 +114,6 @@ interface LeftPanelProps {
   onReset: () => void;
 }
 
-// container ada di dalam file FiterPage.tsx karena untuk kebutuhan test yang harus menyertakan satu file .tsx dalam soal
-// left panel component
 function LeftPanel({
   provinces,
   regencies,
@@ -121,89 +126,82 @@ function LeftPanel({
   onDistrictChange,
   onReset,
 }: LeftPanelProps) {
-  // Transform to options
+  // Transform menjadi bentuk interface option
   const provinceOptions = provinces.map((p) => ({
     label: p.name,
     value: p.id,
   }));
-  const regencyOptions = regencies.map((r) => ({ label: r.name, value: r.id }));
+  const regencyOptions = regencies.map((r) => ({
+    label: r.name,
+    value: r.id,
+  }));
   const districtOptions = districts.map((d) => ({
     label: d.name,
     value: d.id,
   }));
 
   return (
-    <div className="h-screen p-10 border-r border-gray-200 flex flex-col gap-8 text-left">
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 bg-[#e6f0fa] rounded-xl flex items-center justify-center shrink-0">
-          <img src={worldIcon} alt="world" />
+    <div className="left-panel">
+      <div className="h-screen p-10 border-r border-gray-200 flex flex-col gap-8 text-left">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-[#e6f0fa] rounded-xl flex items-center justify-center shrink-0">
+            <img src={worldIcon} alt="world" />
+          </div>
+          <span className="font-bold text-2xl text-gray-800">
+            Frontend Assessment
+          </span>
         </div>
-        <span className="font-bold text-2xl text-gray-800">
-          Frontend Assessment
-        </span>
-      </div>
 
-      <div className="flex flex-col gap-8 mt-8">
-        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-          Filter Wilayah
-        </h3>
+        <div className="flex flex-col gap-8 mt-8">
+          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+            Filter Wilayah
+          </h3>
 
-        <ComboBox
-          name="province" // sesuai soal yang harus ngasih name di combo box
-          label="Provinsi"
-          placeholder="Pilih Provinsi"
-          options={provinceOptions}
-          value={selectedProvinceId}
-          onChange={(e) => onProvinceChange(Number(e.target.value) || "")}
-          icon={provinceIcon}
-        />
-        <ComboBox
-          name="regency" // sesuai soal yang harus ngasih name di combo box
-          label="Kota/Kabupaten"
-          placeholder="Pilih Kota/Kabupaten"
-          options={regencyOptions}
-          value={selectedRegencyId}
-          onChange={(e) => onRegencyChange(Number(e.target.value) || "")}
-          disabled={!selectedProvinceId}
-          icon={regencyIcon}
-        />
-        <ComboBox
-          name="district" // sesuai soal yang harus ngasih name di combo box
-          label="Kecamatan"
-          placeholder="Pilih Kecamatan"
-          options={districtOptions}
-          value={selectedDistrictId}
-          onChange={(e) => onDistrictChange(Number(e.target.value) || "")}
-          disabled={!selectedRegencyId}
-          icon={districtIcon}
-        />
-      </div>
-
-      <hr />
-      <button
-        onClick={onReset}
-        className="w-full py-2.5 px-4 border border-blue-500 text-blue-600 rounded-full font-medium hover:bg-blue-50 transition-colors flex items-center justify-center gap-2 text-sm"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-4 h-4"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M6 18L18 6M6 6l12 12"
+          <ComboBox
+            name="province" // sesuai soal yang harus ngasih name di combo box
+            label="Provinsi"
+            placeholder="Pilih Provinsi"
+            options={provinceOptions}
+            value={selectedProvinceId}
+            onChange={(e) => onProvinceChange(Number(e.target.value) || "")}
+            icon={provinceIcon}
           />
-        </svg>
-        RESET
-      </button>
+          <ComboBox
+            name="regency" // sesuai soal yang harus ngasih name di combo box
+            label="Kota/Kabupaten"
+            placeholder="Pilih Kota/Kabupaten"
+            options={regencyOptions}
+            value={selectedRegencyId}
+            onChange={(e) => onRegencyChange(Number(e.target.value) || "")}
+            disabled={!selectedProvinceId}
+            icon={regencyIcon}
+          />
+          <ComboBox
+            name="district" // sesuai soal yang harus ngasih name di combo box
+            label="Kecamatan"
+            placeholder="Pilih Kecamatan"
+            options={districtOptions}
+            value={selectedDistrictId}
+            onChange={(e) => onDistrictChange(Number(e.target.value) || "")}
+            disabled={!selectedRegencyId}
+            icon={districtIcon}
+          />
+        </div>
+
+        <hr />
+        <button
+          onClick={onReset}
+          className="w-full py-4 px-4 border-2 border-[#155dbd] text-[#374154] rounded-xl font-medium bg-transparent hover:bg-blue-50 transition-colors flex items-center justify-center gap-2 text-sm"
+        >
+          <img src={resetIcon} alt="reset" className="h-5 w-5" />
+          RESET
+        </button>
+      </div>
     </div>
   );
 }
-// right panel component
+
+// right panel container
 function RightPanel() {
   return (
     <div className="right-panel">
@@ -211,10 +209,6 @@ function RightPanel() {
     </div>
   );
 }
-
-// search params logic
-// derived filtering
-// reset handler
 
 // render UI
 export default function FilterPage() {
